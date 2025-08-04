@@ -1,0 +1,33 @@
+services:
+  pede-ai-pg:
+    container_name: pede-ai-pg
+    image: bitnami/postgresql:16
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_DATABASE=pede_ai
+    volumes:
+      - pizzashop_data:/bitnami/postgresql
+      - ./docker:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  pede-ai-jaeger:
+    container_name: pede-ai-jaeger
+    image: jaegertracing/all-in-one:1.57
+    ports:
+      - '16686:16686'
+      - '6831:6831/udp'
+      - '14268:14268'
+      - '4317:4317'
+      - '4318:4318'
+    restart: unless-stopped
+
+volumes:
+  pizzashop_data:
